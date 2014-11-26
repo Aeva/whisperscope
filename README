@@ -1,0 +1,9 @@
+Whjsper is a tool that facilitates automatic documentation of
+JavaScript files.
+
+It makes absolutely no assumptions about your code whatsoever, and
+serves as a means of pulling markdown out of javascript files and
+dumping it into Sphinx.
+
+Whjsper doesn't do *any* syntax checking whatsoever, so it could
+theoretically be used with a lot of things.
