@@ -9,16 +9,13 @@ setup(name="whjsper",
       license="GPLv3",
       packages=["whjsper"],
       zip_safe=False,
-      # entry_points = {
-      #   "console_scripts" : [
-      #       "say=voice.commands:say_command",
-      #       "readtome=voice.commands:read_to_me",
-      #       ],
-      #   },
-      # install_requires = [
-      #     "lxml",
-      #     "sh",
-      #     "requests",
-      #   ]
+      entry_points = {
+        "console_scripts" : [
+            "js_autodoc=whjsper.autodoc:autodoc",
+            ],
+        },
+      install_requires = [
+           "sh",
+      ]
 )
       

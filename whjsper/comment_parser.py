@@ -51,6 +51,10 @@ def parse_comments(file_path, CommentType=CommentBlock):
                 # we are in the beginning of a multiline comment block
                 builder = CommentType(file_path, line_num, True)
                 builder.add_line(line)
+                if line.count("*/"):
+                    # single line comment
+                    comments.append(builder)
+                    builder = None
                 continue
             else:
                 if builder and not builder._multiline_notation:
@@ -72,7 +76,7 @@ def parse_comments(file_path, CommentType=CommentBlock):
 
     if builder and builder._multiline_notation:
         msg = "Unterminated multiline comment in file {0} on line {1}"
-        raise AssertionError(msg.format(file_path, builder.line_num))
+        raise AssertionError(msg.format(file_path, builder.line_number))
     
     else:
         return comments
