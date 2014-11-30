@@ -19,15 +19,72 @@ import os.path
 import re
 
 
+def common_part(lhs, rhs, restrict=[]):
+    """
+    Returns the number of consequtive characters that are the same
+    between two strings, starting from the beginning.
+
+    The restrict parameter allows for only a subset of characters to
+    be allowed to be matched.
+    """
+    if not lhs or not rhs:
+        return 0
+    max_common = min(len(lhs), len(rhs))
+    common = 0
+    for i in range(max_common):
+        if lhs[i] == rhs[i]:
+            if restrict:
+                if lhs[i] in restrict:
+                    common += 1
+                else:
+                    break
+            else:
+                common += 1
+        else:
+            break
+    return common
+
+
+def find_indentation(lines, restrict=[" ", "\t"]):
+    """
+    Find the number of characters in from the left hand side for which
+    each line is the same.
+    """
+    indent = 0
+    if len(lines) >= 2:
+        best = None
+        noise = set(restrict)
+        for i in range(1, len(lines)-1):
+            lhs = lines[i-1]
+            rhs = lines[i]
+            if set(lhs) == noise.intersection(lhs) \
+               or set(rhs) == noise.intersection(rhs):
+                # throw out this comparison because one or both of the
+                # lines appears to contain only noise
+                continue
+            elif not lhs or not rhs:
+                # throw out this comparison because one or both of the
+                # lines is empty
+                continue
+            else:
+                test = common_part(lhs, rhs, noise)
+                if best is None or test < best:
+                    best = test
+        if best:
+            indent = best
+    return indent
+
+
 class CommentBlock(object):
     """
-    Represents a javascript comment block.
+    Represents a C-style comment block.
     """
 
     def __init__(self, file_name, line_number, multiline_notation):
         self._multiline_notation = multiline_notation
         self.file_name = file_name
         self.line_number = line_number
+        self._range = 0
         self.lines = []
 
     def __repr__(self):
@@ -39,34 +96,64 @@ class CommentBlock(object):
     def text(self):
         return "\n".join(self.lines)
 
+    @property
+    def end_line(self):
+        return self.line_number + self._range
+
     def add_line(self, line):
-        cleaned = self._clean(line)
-        if cleaned:
-            self.lines.append(cleaned)
-        else:
-            self.lines.append("")
+        """
+        Add a new line of text to this comment.
+        """
+        self.lines.append(line)
+        self._range += 1
 
-    def _clean(self, line):
+    def reflow(self):
+        """
+        Called to reflow the whitespace at the beginning of the comment
+        lines and remove syntatic cruft.
+        """
+
+        noise_chars = [" ", "/t"]
         if self._multiline_notation:
-            return self._clean_multline(line)
+            noise_chars.append("*")
+            self._reflow_multiline()
         else:
-            return self._clean_consequtive(line)
+            self._reflow_consequtive()
 
-    def _clean_multline(self, line):
-        """
-        Scrub cruft from comments in multiline notation.
-        """
-        if len(self.lines) == 0:
-            line = line[line.index("/*")+2:].strip()
+        cut = find_indentation(self.lines, noise_chars)
+        new_lines = []
+        omit_blanks = True
+        for line in self.lines:
+            new_line = line[cut:]
+            if not new_line.strip():
+                if omit_blanks:
+                    continue
+                else:
+                    new_line = ""
+            else:
+                omit_blanks = False
+            new_lines.append(new_line)
+        self.lines = new_lines
         
-        # strip off random crap at the beginning and end of the line
-        line = re.sub(r'^[\s\*]*', '', line)
-        line = re.sub(r'[\s\*]*$', '', line)
-        line = line.strip()
-        return line
+    def _reflow_multiline(self):
+        """
+        Strip out syntatic cruft from /* multiline */ comments.
+        """
+        
+        # remove the leading slash from the first line
+        first = self.lines[0]
+        assert first.startswith("/*")
+        self.lines[0] = first[1:]
 
-    def _clean_consequtive(self, line):
+        # remove last line if it contains nothing
+        if not self.lines[-1]:
+            self.lines.pop()
+        
+    def _reflow_consequtive(self):
         """
-        Scrub cruft from single line comments.
+        Strip out syntatic cruft from consequtive // comments.
         """
-        return line[line.index("//")+2:].strip()
+
+        # remove the leading "//" from the lines
+        assert self.lines[0].startswith("//")
+        self.lines = [line[2:] for line in self.lines]

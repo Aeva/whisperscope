@@ -77,6 +77,9 @@ def parse_comments(file_path, CommentType=CommentBlock):
     if builder and builder._multiline_notation:
         msg = "Unterminated multiline comment in file {0} on line {1}"
         raise AssertionError(msg.format(file_path, builder.line_number))
+
+    for comment in comments:
+        comment.reflow()
     
     else:
         return comments
