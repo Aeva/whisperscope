@@ -1,9 +1,35 @@
-Whjsper is a tool that facilitates automatic documentation of
-JavaScript files.
+Whisperscope is a tool for scraping textual data out of languages with
+C-style comments, and provides basic autodocumentation functionality
+targeting Sphinx.
 
-It makes absolutely no assumptions about your code whatsoever, and
-serves as a means of pulling markdown out of javascript files and
-dumping it into Sphinx.
+It makes absolutely no assumptions about the structure of your code
+whatsoever, and serves simply as a means of pulling markdown out of
+comments and dumping it into Sphinx.  Works great for performing
+autodocumentation on JavaScript projects.
 
-Whjsper doesn't do *any* syntax checking whatsoever, so it could
-theoretically be used with a lot of things.
+Whisperscope does no syntax checking beyond comment recognition, so it
+could theoretically be used for a lot of things.  Because of this, you
+can also use it as a python module.
+.
+
+
+To install Whisperscope, download or checkout this repository, and run
+```
+python setup.py develop
+```
+
+which will make a symlink to this project on your system path.  This
+will install the command 'docshound', which is used to access
+Whisperscope's autodocumentation functionality.
+
+For more information, see
+```
+docshound --help
+```
+.
+
+
+Whisperscope is free software, and is made available to you under the
+General Public License version 3.0 or later.  See LICENSE for more
+information.  I love you all, and happy hacking!
+.
