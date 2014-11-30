@@ -107,21 +107,25 @@ class DocumentationPage(object):
     Represents a page of documentation.
     """
 
-    def __init__(self, src_path):
+    def __init__(self, src_path, language="javascript"):
         comments = parse_comments(src_path, DocumentationComment)
         file_name = os.path.basename(src_path)
         self.comments = [c for c in comments if c.flagged()]
         self.src_path = file_name
         self.doc_path = ".".join(file_name.split(".")[:-1]+["rst"])
         self.title = file_name
+        self.lang = language
 
     def __repr__(self):
         return "<DocumentPage {0}>".format(self.title)        
 
     def to_rst(self):
         output = "\n\n" + header(self.title) + "\n"
+        code_block = ".. code-block:: {0}".format(self.lang)
         for comment in self.comments:
-            output += comment.process() + "\n\n"
+            rst = comment.process()
+            rst = rst.replace("::", code_block)
+            output += rst + "\n\n"
         return output
 
 
