@@ -19,11 +19,15 @@ To install Whisperscope, download or checkout this repository, and run
 
 which will make a symlink to this project on your system path.  This
 will install the command 'docshound', which is used to access
-Whisperscope's autodocumentation functionality.
+Whisperscope's auto-documentation functionality.
 
-For more information, see
+For more information about , see
 
  > docshound --help
+
+Docshound requires pandoc, which on Fedora GNU/Linux may be installed
+via the 'pandoc' package.  More info on pandoc is available here:
+http://bfroehle.com/2013/04/26/converting-md-to-rst/
 .
 
 
