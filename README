@@ -14,18 +14,16 @@ can also use it as a python module.
 
 
 To install Whisperscope, download or checkout this repository, and run
-```
-python setup.py develop
-```
+
+ > sudo python setup.py develop
 
 which will make a symlink to this project on your system path.  This
 will install the command 'docshound', which is used to access
 Whisperscope's autodocumentation functionality.
 
 For more information, see
-```
-docshound --help
-```
+
+ > docshound --help
 .
 
 
