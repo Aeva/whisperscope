@@ -1,15 +1,15 @@
 
-# This file is part of Whjsper
+# This file is part of Whisperscope
 #
-# Whjsper is free software: you can redistribute it and/or modify
+# Whisperscope is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# Whjsper is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
+# Whisperscope is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
 # along with Waterworks.  If not, see <http://www.gnu.org/licenses/>.
@@ -107,7 +107,7 @@ class DocumentationPage(object):
     Represents a page of documentation.
     """
 
-    def __init__(self, src_path, language="javascript"):
+    def __init__(self, src_path, language):
         comments = parse_comments(src_path, DocumentationComment)
         file_name = os.path.basename(src_path)
         self.comments = [c for c in comments if c.flagged()]
@@ -131,29 +131,32 @@ class DocumentationPage(object):
 
 def export_to_sphinx():
     """
-    Commandline tool for generating JavaScript reference pages for
-    Sphinx.
+    Commandline tool for generating reference pages for Sphinx.
     """
 
     bio = """
-    This is a tool for generating Sphinx reference pages for python
-    projects.
+    This is a tool for generating Sphinx reference pages for projects
+    with C-style comments.
     """
 
     parser = argparse.ArgumentParser(description = bio)
     parser.add_argument(
         "src_path", type=str, nargs="+",
-        help="Path for JavaScript file or files to be documented.")
+        help="Path for source file or files to be documented.")
     parser.add_argument(
         "doc_path", type=str, nargs=1,
         help="The directory for which the output will be saved within.")
+    parser.add_argument(
+        "--language", type=str, nargs="?", default="none",
+        help="Language hint to pass to pygments.",
+        )
     args = parser.parse_args()
     
     src_paths = list(args.src_path)
     sources = []
     for path in src_paths:
         if os.path.isdir(path):
-            sources += glob.glob(os.path.join(path, "*.js"))
+            sources += glob.glob(os.path.join(path, "*"))
         else:
             sources.append(path)
     # source files to be consumed:
@@ -170,10 +173,13 @@ def export_to_sphinx():
         print "No files to parse...?"
         exit(0)
 
+    # formatting language for pygments
+    lang = args.language
+
     # save documentation pages
     pages = []
     for in_path in sources:
-        page = DocumentationPage(in_path)
+        page = DocumentationPage(in_path, lang)
         if len(page.comments):
             pages.append(page)
             with open(os.path.join(out_path, page.doc_path), "w") as out_file:
