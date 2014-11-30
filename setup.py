@@ -1,17 +1,17 @@
 from setuptools import setup
 
-setup(name="whjsper",
+setup(name="whisperscope",
       version="0.0",
       description="Processing on the unspoken parts of JS files.",
       url="",
       author="Aeva Palecek",
       author_email="aeva.ntsc@gmail.com",
       license="GPLv3",
-      packages=["whjsper"],
+      packages=["whisperscope"],
       zip_safe=False,
       entry_points = {
         "console_scripts" : [
-            "js_autodoc=whjsper.autodoc:autodoc",
+            "docshound=whisperscope.docstrings:export_to_sphinx",
             ],
         },
       install_requires = [

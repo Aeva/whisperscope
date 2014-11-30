@@ -125,9 +125,10 @@ class DocumentationPage(object):
         return output
 
 
-def autodoc():
+def export_to_sphinx():
     """
-    Generates reference pages for Sphinx.
+    Commandline tool for generating JavaScript reference pages for
+    Sphinx.
     """
 
     bio = """
