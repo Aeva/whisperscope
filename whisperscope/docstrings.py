@@ -73,7 +73,7 @@ class DocumentationComment(CommentBlock):
         """
         Returns True if this comment is formatted for documentation.
         """
-        return len(self.lines) > 1 and self.lines[0].startswith("[+]")
+        return len(self.lines) > 1 and self.lines[0].strip().startswith("[+]")
 
     def process(self):
         """
